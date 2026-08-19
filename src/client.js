@@ -203,6 +203,14 @@ window.__ModuleLoader__.load({
       };
     }
 
+    function textField(field) {
+      return {
+        field,
+        format: (v) => typeof v === "string" ? v : "",
+        parse: (t) => { const s = t.trim(); if (s === "") return { kind: "clear" }; return { kind: "set", value: s }; },
+      };
+    }
+
     class CardForm {
       constructor(scope, specs, secrets = []) {
         this.scope = scope;
@@ -326,13 +334,13 @@ window.__ModuleLoader__.load({
         this.scope = scope;
         this.api = api;
         this.credential = { ref: "", configured: false, writable: true };
-        this.form = new CardForm(scope, [numberField("timeoutMs"), numberField("maxImageDimension")], [{ field: API_KEY_FIELD, write: (t) => this.writeKey(t) }]);
+        this.form = new CardForm(scope, [textField("baseUrl"), textField("model"), numberField("timeoutMs"), numberField("maxImageDimension")], [{ field: API_KEY_FIELD, write: (t) => this.writeKey(t) }]);
         this.store = this.form.bind(() => this.projection());
         scope.subscribe(() => this.readCredential());
         this.readCredential();
       }
       projection() {
-        return { ...this.form.shell(), timeoutMs: this.form.field("timeoutMs"), maxImageDimension: this.form.field("maxImageDimension"), apiKey: this.form.field(API_KEY_FIELD), apiKeyConfigured: this.credential.configured, apiKeyWritable: this.credential.writable };
+        return { ...this.form.shell(), baseUrl: this.form.field("baseUrl"), model: this.form.field("model"), timeoutMs: this.form.field("timeoutMs"), maxImageDimension: this.form.field("maxImageDimension"), apiKey: this.form.field(API_KEY_FIELD), apiKeyConfigured: this.credential.configured, apiKeyWritable: this.credential.writable };
       }
       async readCredential() {
         const ref = this.refOf(this.scope.getSnapshot());
@@ -364,6 +372,8 @@ window.__ModuleLoader__.load({
         t, titleKey: "imageReadTitle", descriptionKey: "imageReadDescription",
         state, onSave: props.save, onDiscard: props.discard,
         children: [
+          jsx(ValueField, { id: "imgread-baseurl", label: t("baseUrl"), hint: t("baseUrlHint"), overriddenLabel: t("overridden"), resetLabel: t("reset"), disabled, ...state.baseUrl, onEdit: (t2) => props.edit("baseUrl", t2), onReset: () => props.resetField("baseUrl") }),
+          jsx(ValueField, { id: "imgread-model", label: t("model"), hint: t("modelHint"), overriddenLabel: t("overridden"), resetLabel: t("reset"), disabled, ...state.model, onEdit: (t2) => props.edit("model", t2), onReset: () => props.resetField("model") }),
           jsx(SecretField, { id: "imgread-apikey", label: t("apiKey"), hint: t("apiKeyHint"), disabled: !state.apiKeyWritable, text: state.apiKey.text, configured: state.apiKeyConfigured, stateLabel: state.apiKeyConfigured ? t("apiKeySet") : t("apiKeyUnset"), onEdit: (t2) => props.edit("apiKey", t2) }),
           jsx(ValueField, { id: "imgread-timeout", label: t("timeoutMs"), hint: t("timeoutMsHint"), overriddenLabel: t("overridden"), resetLabel: t("reset"), invalidLabel: t("invalidNumber"), numeric: true, disabled, ...state.timeoutMs, onEdit: (t2) => props.edit("timeoutMs", t2), onReset: () => props.resetField("timeoutMs") }),
           jsx(ValueField, { id: "imgread-maxdim", label: t("maxImageDimension"), hint: t("maxImageDimensionHint"), overriddenLabel: t("overridden"), resetLabel: t("reset"), invalidLabel: t("invalidNumber"), numeric: true, disabled, ...state.maxImageDimension, onEdit: (t2) => props.edit("maxImageDimension", t2), onReset: () => props.resetField("maxImageDimension") }),
@@ -760,6 +770,10 @@ window.__ModuleLoader__.load({
       apiKeyHint: "Stored outside the settings file. Leave blank to keep the current key.",
       apiKeySet: "A key is configured.",
       apiKeyUnset: "No key configured; image reading is unavailable until one is.",
+      baseUrl: "Endpoint",
+      baseUrlHint: "Overrides the primary provider endpoint; leave blank to keep the provider chain. /chat/completions is appended when missing.",
+      model: "Model",
+      modelHint: "Overrides the primary provider model; leave blank to keep the provider chain.",
       timeoutMs: "Request timeout (ms)",
       timeoutMsHint: "How long a vision request may run before it is terminated.",
       maxImageDimension: "Max image dimension (px)",
@@ -784,6 +798,10 @@ window.__ModuleLoader__.load({
       apiKeyHint: "不写入设置文件。留空表示保持当前密钥。",
       apiKeySet: "已配置密钥。",
       apiKeyUnset: "未配置密钥；配置之前图像识别不可用。",
+      baseUrl: "接口地址",
+      baseUrlHint: "覆盖主 provider 的接口地址；留空保持 provider 链配置。未带 /chat/completions 时会自动补全。",
+      model: "模型",
+      modelHint: "覆盖主 provider 的模型名；留空保持 provider 链配置。",
       timeoutMs: "请求超时（毫秒）",
       timeoutMsHint: "视觉请求最长运行时间，超时即终止。",
       maxImageDimension: "最大图像边长（像素）",

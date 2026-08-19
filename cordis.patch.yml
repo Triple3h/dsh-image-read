@@ -8,7 +8,10 @@
 #      bubble attachment folding into chips; settings usage/cleanup panel.
 #
 # Tool name: read_image_mimo
-# Configure via the Web UI (Settings → Plugins → Plugin configuration).
+# Configure via the Web UI (Settings → Plugins → Plugin configuration):
+# endpoint (baseUrl), model and API key of the primary provider; values left
+# blank fall back to this file. baseUrl may omit /chat/completions — it is
+# appended automatically.
 
 - insert:
     - id: image-read

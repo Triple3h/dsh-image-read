@@ -28,7 +28,9 @@ DeepSeek Harness 原生插件：用多模态模型识图，返回结构化 JSON 
 
 ## 配置
 
-在 `cordis.patch.yml` 的 `config` 下配置 provider 链：
+优先在 Web UI 配置：**设置 → 插件 → 插件配置 → 图像识别**，可填接口地址（baseUrl）、模型名与 API Key；留空则回退到 `cordis.patch.yml` 的 provider 链。baseUrl 未带 `/chat/completions` 时会自动补全。
+
+`cordis.patch.yml` 的 `config` 下可配置 provider 链（故障转移）：
 
 ```yaml
 config:
