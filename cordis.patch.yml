@@ -1,0 +1,39 @@
+# dsh-image-read v0.4.0 — native host + web client plugin
+#
+# Two capabilities bundled as one plugin:
+#   A. Structured vision tool (read_image_mimo) — multi-provider failover,
+#      schema-validated output, result caching, SSRF protection, key redaction.
+#   B. Attachment input (paste / drag-drop / select) — Ctrl+V paste, whole-page
+#      drag-drop, file/folder picker; sends copy into workspace temp dir;
+#      bubble attachment folding into chips; settings usage/cleanup panel.
+#
+# Tool name: read_image_mimo
+# Configure via the Web UI (Settings → Plugins → Plugin configuration).
+
+- insert:
+    - id: image-read
+      name: 'dsh-image-read'
+      config:
+        # --- A. Vision provider chain (multi-provider failover) ---
+        # First provider that succeeds wins; failures cascade to the next.
+        providers:
+          - name: mimo
+            baseUrl: 'https://api.xiaomimimo.com/v1'
+            apiKey: ''  # Set via Web UI or MIMO_API_KEY env var
+            model: 'mimo-v2.5'
+          # Example fallback (uncomment and fill in to enable):
+          # - name: dashscope
+          #   baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1'
+        #   apiKey: ''
+        #   model: 'qwen3-vl-plus'
+        timeoutMs: 120000
+        maxImageDimension: 1024
+
+        # --- B. Attachment input limits (optional) ---
+        # Uncomment to override the built-in defaults.
+        # attachments:
+        #   maxFileBytes: 1073741824        # 1 GiB per file
+        #   maxBatchBytes: 2147483648       # 2 GiB per batch
+        #   maxFiles: 10000                 # max files per batch
+        #   maxDepth: 64                    # max directory nesting
+        #   maxConcurrentUploads: 4         # parallel uploads per batch
