@@ -1,11 +1,10 @@
-# dsh-image-read v0.4.0 — native host + web client plugin
+# dsh-image-read v0.5.0 — native host + web client plugin
 #
-# Two capabilities bundled as one plugin:
-#   A. Structured vision tool (read_image_mimo) — multi-provider failover,
-#      schema-validated output, result caching, SSRF protection, key redaction.
-#   B. Attachment input (paste / drag-drop / select) — Ctrl+V paste, whole-page
-#      drag-drop, file/folder picker; sends copy into workspace temp dir;
-#      bubble attachment folding into chips; settings usage/cleanup panel.
+# Single capability: structured vision tool (read_image_mimo) — multi-provider
+# failover, schema-validated output, result caching, SSRF protection, key
+# redaction, Web UI config card.
+#
+# Attachment input has moved to dsh-input-enhancement.
 #
 # Tool name: read_image_mimo
 # Configure via the Web UI (Settings → Plugins → Plugin configuration):
@@ -17,7 +16,7 @@
     - id: image-read
       name: 'dsh-image-read'
       config:
-        # --- A. Vision provider chain (multi-provider failover) ---
+        # --- Vision provider chain (multi-provider failover) ---
         # First provider that succeeds wins; failures cascade to the next.
         providers:
           - name: mimo
@@ -31,12 +30,3 @@
         #   model: 'qwen3-vl-plus'
         timeoutMs: 120000
         maxImageDimension: 1024
-
-        # --- B. Attachment input limits (optional) ---
-        # Uncomment to override the built-in defaults.
-        # attachments:
-        #   maxFileBytes: 1073741824        # 1 GiB per file
-        #   maxBatchBytes: 2147483648       # 2 GiB per batch
-        #   maxFiles: 10000                 # max files per batch
-        #   maxDepth: 64                    # max directory nesting
-        #   maxConcurrentUploads: 4         # parallel uploads per batch
